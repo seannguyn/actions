@@ -13,6 +13,9 @@ on:
         required: true
       GH_PAT:
         required: false
+    env:
+      DOCKER_REPO:
+        required: true
 
 permissions:
   contents: write
@@ -35,7 +38,7 @@ jobs:
         id: set-vars
         run: |
           IMAGE_TAG=$(git rev-parse --short HEAD)
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/$(basename ${{ github.repository }})"
+          IMAGE_NAME="${{ env.DOCKER_REPO }}/$(basename ${{ github.repository }})"
           REPO_NAME=$(basename ${{ github.repository }})
           ORG_NAME=${{ github.repository_owner }}
 
