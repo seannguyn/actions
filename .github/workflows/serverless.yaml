@@ -39,11 +39,11 @@ jobs:
         run: |
           pwd
           ls
-          IMAGE_TAG=$(git rev-parse --short HEAD)
+          IMAGE_TAG=${{ github.sha }}
           IMAGE_NAME=${{ inputs.docker_repo }}/$(basename ${{ github.repository }})
           REPO_NAME=$(basename ${{ github.repository }})
           ORG_NAME=${{ github.repository_owner }}
-          BRANCH=$REPO_NAME-$(git rev-parse --short HEAD)-deployment
+          BRANCH=$REPO_NAME-${{ github.sha }}-deployment
 
           echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
           echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_ENV"
