@@ -1,0 +1,85 @@
+name: Build and deploy serverless application on ZBI Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Set Environment Variables
+        run: |
+          echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+          echo "ORG_NAME=${{ github.repository_owner }}" >> $GITHUB_ENV
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME }}"
+          docker build -t "$IMAGE_NAME:${{ env.IMAGE_TAG }}" .
+          docker push "$IMAGE_NAME:${{ env.IMAGE_TAG }}"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+
+  create-pr-in-deployment:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Deployment Repo
+        uses: actions/checkout@v3
+        with:
+          repository: seannguyn/deployment
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: deployment
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Create Kustomization YAML from Template
+        run: |
+          mkdir -p deployment/orgs/${ORG_NAME}/${REPO_NAME}
+          cp deployment/template-kustomization.yaml deployment/orgs/${ORG_NAME}/${REPO_NAME}/kustomization.yaml
+          sed -i "s|\${REPO_NAME}|${REPO_NAME}|g" deployment/orgs/${ORG_NAME}/${REPO_NAME}/kustomization.yaml
+          sed -i "s|\${IMAGE_NAME}|${IMAGE_NAME}|g" deployment/orgs/${ORG_NAME}/${REPO_NAME}/kustomization.yaml
+          sed -i "s|\${IMAGE_TAG}|${IMAGE_TAG}|g" deployment/orgs/${ORG_NAME}/${REPO_NAME}/kustomization.yaml
+
+      - name: Commit and Push Changes
+        run: |
+          cd deployment
+          git checkout -b add-${REPO_NAME}-deployment
+          git add orgs/${ORG_NAME}/${REPO_NAME}/kustomization.yaml
+          git commit -m "Add kustomization for ${REPO_NAME}"
+          git push origin add-${REPO_NAME}-deployment
+
+      - name: Create Pull Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { repo, owner } = context.repo;
+            const response = await github.rest.pulls.create({
+              owner: '${{ github.repository_owner }}',
+              repo: 'deployment',
+              title: `Add deployment for ${{ env.REPO_NAME }}`,
+              head: `add-${{ env.REPO_NAME }}-deployment`,
+              base: 'main',
+              body: 'This PR adds a new deployment for `${{ env.REPO_NAME }}`.',
+            });
+            console.log(`Pull request created: ${response.data.html_url}`);
