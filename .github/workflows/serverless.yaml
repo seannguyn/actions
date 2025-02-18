@@ -29,6 +29,9 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.sha }}
+          path: app
 
       - name: Set Variables
         id: set-vars
@@ -88,6 +91,8 @@ jobs:
 
       - name: Create Kustomization YAML from Template
         run: |
+          pwd
+          ls
           echo "ENV VARIABLES:"
           echo "IMAGE_NAME=${{ env.IMAGE_NAME }}"
           echo "IMAGE_TAG=${{ env.IMAGE_TAG }}"
