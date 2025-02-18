@@ -35,7 +35,7 @@ jobs:
         id: set-vars
         run: |
           IMAGE_TAG=$(git rev-parse --short HEAD)
-          IMAGE_NAME="${{ inputs.docker_repo }}/$(basename ${{ github.repository }})"
+          IMAGE_NAME=${{ inputs.docker_repo }}/$(basename ${{ github.repository }})
           REPO_NAME=$(basename ${{ github.repository }})
           ORG_NAME=${{ github.repository_owner }}
 
