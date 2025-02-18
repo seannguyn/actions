@@ -35,7 +35,10 @@ jobs:
 
       - name: Set Variables
         id: set-vars
+        working-directory: app
         run: |
+          pwd
+          ls
           IMAGE_TAG=$(git rev-parse --short HEAD)
           IMAGE_NAME=${{ inputs.docker_repo }}/$(basename ${{ github.repository }})
           REPO_NAME=$(basename ${{ github.repository }})
