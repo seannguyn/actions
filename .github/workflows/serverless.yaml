@@ -3,7 +3,7 @@ name: Build and deploy serverless application on ZBI Kubernetes
 on:
   workflow_call:
     inputs:
-      image_name:
+      docker_repo:
         required: true
         type: string
     secrets:
@@ -13,9 +13,6 @@ on:
         required: true
       GH_PAT:
         required: false
-    env:
-      DOCKER_REPO:
-        required: true
 
 permissions:
   contents: write
