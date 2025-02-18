@@ -64,9 +64,15 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
-        run: |
-          docker build -t "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" .
-          docker push "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+        id: build-container
+        uses: docker/build-push-action@v6
+        with:
+          context: "./app"
+          push: true
+          sbom: true
+          provenance: mode=max
+          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          file: ./app/Dockerfile
 
   create-pr-in-deployment:
     needs: build-and-push
@@ -93,6 +99,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Create Kustomization YAML from Template
+        working-directory: deployment
         run: |
           pwd
           ls
@@ -102,21 +109,20 @@ jobs:
           echo "ORG_NAME=${{ env.ORG_NAME }}"
           echo "REPO_NAME=${{ env.REPO_NAME }}"
 
-          mkdir -p deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}
-          cp deployment/template-kustomization.yaml deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          mkdir -p orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}
+          cp template-kustomization.yaml orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
           
-          sed -i "s|\${REPO_NAME}|${{ env.REPO_NAME }}|g" deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
-          sed -i "s|\${IMAGE_NAME}|${{ env.IMAGE_NAME }}|g" deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
-          sed -i "s|\${IMAGE_TAG}|${{ env.IMAGE_TAG }}|g" deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          sed -i "s|\${REPO_NAME}|${{ env.REPO_NAME }}|g" orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          sed -i "s|\${IMAGE_NAME}|${{ env.IMAGE_NAME }}|g" orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          sed -i "s|\${IMAGE_TAG}|${{ env.IMAGE_TAG }}|g" orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
       
       - name: Add resource to main Kustomization YAML
         run: |
           echo "- orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}" >> kustomization.yaml
 
       - name: Commit and Push Changes
+        working-directory: deployment
         run: |
-          cd deployment
-
           git checkout -b ${{ env.BRANCH }}
           git add .
           git commit -m "Add kustomization for ${{ env.REPO_NAME }}"
