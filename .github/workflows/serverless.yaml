@@ -97,6 +97,10 @@ jobs:
           sed -i "s|\${REPO_NAME}|${{ env.REPO_NAME }}|g" deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
           sed -i "s|\${IMAGE_NAME}|${{ env.IMAGE_NAME }}|g" deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
           sed -i "s|\${IMAGE_TAG}|${{ env.IMAGE_TAG }}|g" deployment/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+      
+      - name: Add resource to main Kustomization YAML
+        run: |
+          echo "- orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}" >> kustomization.yaml
 
       - name: Commit and Push Changes
         run: |
