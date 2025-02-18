@@ -1,9 +1,18 @@
 name: Build and deploy serverless application on ZBI Kubernetes
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      image_name:
+        required: true
+        type: string
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
+      GH_PAT:
+        required: false
 
 permissions:
   contents: write
