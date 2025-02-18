@@ -105,7 +105,7 @@ jobs:
       - name: Commit and Push Changes
         run: |
           cd deployment
-          git checkout -b add-${{ env.REPO_NAME }}-deployment
+          git checkout -b ${{ env.REPO_NAME }}-$(git rev-parse --short HEAD)-deployment
           git add orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
           git commit -m "Add kustomization for ${{ env.REPO_NAME }}"
           git push origin add-${{ env.REPO_NAME }}-deployment
