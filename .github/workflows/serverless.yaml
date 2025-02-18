@@ -110,13 +110,14 @@ jobs:
           cd deployment
 
           git checkout -b ${{ env.BRANCH }}
-          git add orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          git add .
           git commit -m "Add kustomization for ${{ env.REPO_NAME }}"
           git push origin ${{ env.BRANCH }}
 
       - name: Create Pull Request
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GH_PAT }}
           script: |
             const { repo, owner } = context.repo;
             const response = await github.rest.pulls.create({
