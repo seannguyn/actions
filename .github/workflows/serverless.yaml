@@ -82,6 +82,7 @@ jobs:
           push: true
           sbom: true
           provenance: mode=max
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           file: ./app/Dockerfile
 
@@ -120,16 +121,26 @@ jobs:
           echo "ORG_NAME=${{ env.ORG_NAME }}"
           echo "REPO_NAME=${{ env.REPO_NAME }}"
 
-          mkdir -p orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}
-          cp template-kustomization.yaml orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          mkdir -p deploy/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}
+          cp template-kustomization.yaml deploy/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
           
-          sed -i "s|\${REPO_NAME}|${{ env.REPO_NAME }}|g" orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
-          sed -i "s|\${IMAGE_NAME}|${{ env.IMAGE_NAME }}|g" orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
-          sed -i "s|\${IMAGE_TAG}|${{ env.IMAGE_TAG }}|g" orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          sed -i "s|\${REPO_NAME}|${{ env.REPO_NAME }}|g" deploy/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          sed -i "s|\${IMAGE_NAME}|${{ env.IMAGE_NAME }}|g" deploy/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
+          sed -i "s|\${IMAGE_TAG}|${{ env.IMAGE_TAG }}|g" deploy/orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/kustomization.yaml
       
       - name: Add resource to main Kustomization YAML
+        working-directory: deployment
         run: |
-          echo "- orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}" >> kustomization.yaml
+          SERVERLESS_APP="- orgs/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}"
+          KUSTOMIZE_FILE="deploy/kustomization.yaml"
+
+          # Check if the line already exists
+          if ! grep -Fxq -- "$SERVERLESS_APP" "$KUSTOMIZE_FILE"; then
+            echo "$SERVERLESS_APP" >> "$KUSTOMIZE_FILE"
+            echo "Line added: $SERVERLESS_APP"
+          else
+            echo "Line already exists, skipping."
+          fi
 
       - name: Commit and Push Changes
         working-directory: deployment

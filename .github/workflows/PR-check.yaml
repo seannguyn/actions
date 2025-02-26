@@ -1,0 +1,28 @@
+name: Check if deployment works on ArgoCD
+
+on:
+  workflow_call:
+
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.sha }}
+          path: app
+
+      - name: First
+        working-directory: app
+        run: |
+          echo "I'm running when PR is rasied"
+          sleep 4s
+          pwd
+          ls
