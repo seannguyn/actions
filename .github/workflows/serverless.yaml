@@ -21,11 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Build and push container image to dockerhub"
-        uses: seannguyn/actions/.github/workflows/serverless.yaml@main
+        uses: seannguyn/actions/.github/actions/build-push@main
         with:
-          docker_repo: ${{ inputs.DOCKER_REPO }}
-        secrets:
+          docker_repo: ${{ vars.DOCKER_REPO }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           GH_PAT: ${{ secrets.GH_PAT }}
   create-pr-in-deployment:
-    
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Build and push container image to dockerhub"
+        uses: seannguyn/actions/.github/actions/deploy-PR@main
