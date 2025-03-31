@@ -27,6 +27,7 @@ runs:
         path: app
 
     - name: Set Variables
+      shell: bash
       id: set-vars
       working-directory: app
       run: |
@@ -51,6 +52,7 @@ runs:
         echo "BRANCH=$BRANCH" >> "$GITHUB_OUTPUT"
 
     - name: Enable Docker BuildKit
+      shell: bash
       run: |
         echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
         echo "BUILDX_NO_DEFAULT_ATTESTATIONS=1" >> $GITHUB_ENV
