@@ -1,0 +1,23 @@
+name: Build and deploy serverless application on ZBI Kubernetes
+
+on:
+  workflow_call:
+    inputs:
+      docker_repo:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy-PR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: dummy
+        run: |
+          echo "I'm running when PR is rasied"
+          sleep 4s
+          pwd
+          ls
