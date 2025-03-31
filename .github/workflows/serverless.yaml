@@ -28,7 +28,7 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
   create-pr-in-deployment:
     runs-on: ubuntu-latest
-    # needs: build-and-push
+    needs: build-and-push
     steps:
       - name: "Build and push container image to dockerhub"
         uses: seannguyn/actions/.github/actions/deploy-PR@main

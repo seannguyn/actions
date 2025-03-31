@@ -4,6 +4,7 @@ runs:
   using: "composite"
   steps:
     - name: dummy
+      shell: bash
       run: |
         echo "I'm running when PR is rasied"
         sleep 4s
