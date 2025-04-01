@@ -12,7 +12,7 @@ runs:
     - name: dummy
       shell: bash
       run: |
-        echo "Deploying to ${{ vars.environment }}"
+        echo "Deploying to ${{ input.environment }}"
         sleep 4s
         pwd
         ls
