@@ -8,7 +8,7 @@ on:
         type: string
       environment:
         description: 'The target environment (dev or prod)'
-        required: true
+        required: false
         type: string
     secrets:
       DOCKER_PASSWORD:

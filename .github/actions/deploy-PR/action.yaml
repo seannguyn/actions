@@ -3,7 +3,7 @@ name: Build and deploy serverless application on ZBI Kubernetes
 inputs:
   environment:
     description: 'The target environment (dev or prod)'
-    required: true
+    required: false
     type: string
 
 runs:
