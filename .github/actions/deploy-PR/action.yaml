@@ -1,12 +1,18 @@
 name: Build and deploy serverless application on ZBI Kubernetes
 
+inputs:
+  environment:
+    description: 'The target environment (dev or prod)'
+    required: true
+    type: string
+
 runs:
   using: "composite"
   steps:
     - name: dummy
       shell: bash
       run: |
-        echo "I'm running when PR is rasied"
+        echo "Deploying to ${{ inputs.environment }}"
         sleep 4s
         pwd
         ls

@@ -6,6 +6,10 @@ on:
       docker_repo:
         required: true
         type: string
+      environment:
+        description: 'The target environment (dev or prod)'
+        required: true
+        type: string
     secrets:
       DOCKER_PASSWORD:
         required: true
@@ -32,3 +36,5 @@ jobs:
     steps:
       - name: "Build and push container image to dockerhub"
         uses: seannguyn/actions/.github/actions/deploy-PR@main
+        with:
+          environment: ${{ vars.environment }}
