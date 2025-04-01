@@ -27,7 +27,7 @@ jobs:
       - name: "Build and push container image to dockerhub"
         uses: seannguyn/actions/.github/actions/build-push@main
         with:
-          docker_repo: ${{ vars.DOCKER_REPO }}
+          docker_repo: ${{ input.docker_repo }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           GH_PAT: ${{ secrets.GH_PAT }}
   create-pr-in-deployment:
@@ -37,4 +37,4 @@ jobs:
       - name: "Build and push container image to dockerhub"
         uses: seannguyn/actions/.github/actions/deploy-PR@main
         with:
-          environment: ${{ vars.environment }}
+          environment: ${{ input.environment }}
