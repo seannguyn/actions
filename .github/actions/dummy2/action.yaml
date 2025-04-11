@@ -7,6 +7,7 @@ runs:
       shell: bash
       run: |
         echo "dummy2"
+        echo "ENV_NAME is: $ENV_NAME"
         sleep 2s
         pwd
         ls
