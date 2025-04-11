@@ -1,0 +1,33 @@
+name: Build and deploy serverless application on Kubernetes
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        description: 'The target environment (dev or prod)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dummy1:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    steps:
+      - name: "dummy1"
+        uses: seannguyn/actions/.github/actions/dummy1@main
+  dummy2:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    steps:
+      - name: "dummy2"
+        uses: seannguyn/actions/.github/actions/dummy2@main
+  dummy3:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    steps:
+      - name: "dummy3"
+        uses: seannguyn/actions/.github/actions/dummy3@main

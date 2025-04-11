@@ -1,4 +1,4 @@
-name: Build and deploy serverless application on ZBI Kubernetes
+name: Build and deploy serverless application on Kubernetes
 
 inputs:
   environment:

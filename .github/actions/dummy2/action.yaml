@@ -1,0 +1,12 @@
+name: Build and deploy serverless application on Kubernetes
+
+runs:
+  using: "composite"
+  steps:
+    - name: dummy2
+      shell: bash
+      run: |
+        echo "dummy2"
+        sleep 2s
+        pwd
+        ls
