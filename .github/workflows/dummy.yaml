@@ -20,12 +20,14 @@ jobs:
       - name: "dummy1"
         uses: seannguyn/actions/.github/actions/dummy1@main
   dummy2:
+    needs: dummy1
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
     steps:
       - name: "dummy2"
         uses: seannguyn/actions/.github/actions/dummy2@main
   dummy3:
+    needs: dummy1
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
     steps:
